@@ -1,128 +1,10 @@
+
+
+const jwt = require("jsonwebtoken");
+
 const Prescription = require(
-  "../models/prescriptionModel"
+  "../models/docsidePrescriptionModel"
 );
-
-
-
-// =====================================================
-// ============ CREATE PRESCRIPTION ====================
-// =====================================================
-
-exports.createPrescription =
-  async (req, res) => {
-    try {
-      const {
-        patient,
-        patientId,
-        diagnosis,
-        medicines,
-        type,
-        instructions,
-      } = req.body;
-
-      // ================= VALIDATION =================
-
-      if (
-        !patient ||
-        !patientId ||
-        !diagnosis
-      ) {
-        return res.status(400).json({
-          success: false,
-
-          message:
-            "All required fields are missing",
-        });
-      }
-
-      // ================= CREATE PRESCRIPTION =================
-
-      const prescription =
-        await Prescription.create({
-          patient,
-
-          patientId,
-
-          doctorId:
-            req.doctor._id,
-
-          doctorName:
-            req.doctor.name,
-
-          diagnosis,
-
-          medicines,
-
-          type,
-
-          instructions,
-        });
-
-      // ================= RESPONSE =================
-
-      res.status(201).json({
-        success: true,
-
-        message:
-          "Prescription created successfully",
-
-        data: {
-          id:
-            prescription._id,
-
-          patient:
-            prescription.patient,
-
-          patientId:
-            prescription.patientId,
-
-          date:
-            prescription.date,
-
-          diagnosis:
-            prescription.diagnosis,
-
-          medicines:
-            prescription.medicines.map(
-              (med) => ({
-                name:
-                  med.name,
-
-                dosage:
-                  med.dosage,
-
-                duration:
-                  med.duration,
-              })
-            ),
-
-          type:
-            prescription.type,
-
-          instructions:
-            prescription.instructions,
-
-          doctor: {
-            name:
-              prescription.doctorName,
-
-            reg_no:
-              prescription.reg_no,
-          },
-        },
-      });
-    } catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
 
 
 // =====================================================
@@ -131,88 +13,112 @@ exports.createPrescription =
 
 exports.getMyPrescriptions =
   async (req, res) => {
-    try {
-      // ================= FIND =================
 
-      const prescriptions =
-        await Prescription.find({
-          doctorId:
-            req.doctor._id,
-        }).sort({
-          createdAt: -1,
+    try {
+
+      // ================= TOKEN =================
+
+      let token;
+
+      if (
+
+        req.headers.authorization &&
+
+        req.headers.authorization.startsWith(
+          "Bearer"
+        )
+
+      ) {
+
+        token =
+          req.headers.authorization.split(
+            " "
+          )[1];
+
+      }
+
+      // ================= TOKEN CHECK =================
+
+      if (!token) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Token missing",
+
         });
 
-      // ================= FORMAT =================
+      }
 
-      const formattedData =
-        prescriptions.map((item) => ({
-          id:
-            item._id,
+      // ================= VERIFY TOKEN =================
 
-          patient:
-            item.patient,
+      const decoded =
+        jwt.verify(
 
-          patientId:
-            item.patientId,
+          token,
 
-          date:
-            item.date,
+          process.env.JWT_SECRET
+        );
 
-          diagnosis:
-            item.diagnosis,
+      console.log(
+        "TOKEN USER ID =>",
+        decoded.id
+      );
 
-          medicines:
-            item.medicines.map(
-              (med) => ({
-                name:
-                  med.name,
+      // ================= FIND ALL =================
 
-                dosage:
-                  med.dosage,
+      const prescriptions =
+        await Prescription.find()
 
-                duration:
-                  med.duration,
-              })
-            ),
+        .sort({
 
-          type:
-            item.type,
+          createdAt: -1,
 
-          instructions:
-            item.instructions,
+        });
 
-          doctor: {
-            name:
-              item.doctorName,
-
-            reg_no:
-              item.reg_no,
-          },
-        }));
+      console.log(
+        "TOTAL PRESCRIPTIONS =>",
+        prescriptions.length
+      );
 
       // ================= RESPONSE =================
 
       res.status(200).json({
+
         success: true,
 
         message:
           "Prescriptions fetched successfully",
 
+        total:
+          prescriptions.length,
+
         data:
-          formattedData,
+          prescriptions,
+
       });
+
     } catch (error) {
-      console.log(error);
+
+      console.log(
+        "GET PRESCRIPTIONS ERROR =>",
+        error
+      );
 
       res.status(500).json({
+
         success: false,
 
         message:
           error.message,
-      });
-    }
-  };
 
+      });
+
+    }
+
+};
 
 
 // =====================================================
@@ -221,142 +127,60 @@ exports.getMyPrescriptions =
 
 exports.getSinglePrescription =
   async (req, res) => {
+
     try {
+
       // ================= FIND =================
 
       const prescription =
-        await Prescription.findOne({
-          _id:
-            req.params.id,
+        await Prescription.findById(
 
-          doctorId:
-            req.doctor._id,
-        });
+          req.params.id
+
+        );
 
       // ================= CHECK =================
 
       if (!prescription) {
+
         return res.status(404).json({
+
           success: false,
 
           message:
             "Prescription not found",
+
         });
+
       }
 
       // ================= RESPONSE =================
 
       res.status(200).json({
+
         success: true,
 
-        data: {
-          id:
-            prescription._id,
+        data:
+          prescription,
 
-          patient:
-            prescription.patient,
-
-          patientId:
-            prescription.patientId,
-
-          date:
-            prescription.date,
-
-          diagnosis:
-            prescription.diagnosis,
-
-          medicines:
-            prescription.medicines.map(
-              (med) => ({
-                name:
-                  med.name,
-
-                dosage:
-                  med.dosage,
-
-                duration:
-                  med.duration,
-              })
-            ),
-
-          type:
-            prescription.type,
-
-          instructions:
-            prescription.instructions,
-
-          doctor: {
-            name:
-              prescription.doctorName,
-
-            reg_no:
-              prescription.reg_no,
-          },
-        },
       });
+
     } catch (error) {
-      console.log(error);
+
+      console.log(
+        "GET SINGLE PRESCRIPTION ERROR =>",
+        error
+      );
 
       res.status(500).json({
+
         success: false,
 
         message:
           error.message,
+
       });
+
     }
-  };
 
-
-
-// =====================================================
-// ============ DELETE PRESCRIPTION ====================
-// =====================================================
-
-exports.deletePrescription =
-  async (req, res) => {
-    try {
-      // ================= FIND =================
-
-      const prescription =
-        await Prescription.findOne({
-          _id:
-            req.params.id,
-
-          doctorId:
-            req.doctor._id,
-        });
-
-      // ================= CHECK =================
-
-      if (!prescription) {
-        return res.status(404).json({
-          success: false,
-
-          message:
-            "Prescription not found",
-        });
-      }
-
-      // ================= DELETE =================
-
-      await prescription.deleteOne();
-
-      // ================= RESPONSE =================
-
-      res.status(200).json({
-        success: true,
-
-        message:
-          "Prescription deleted successfully",
-      });
-    } catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
+};

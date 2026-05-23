@@ -17,6 +17,7 @@ const http =
 
 const { Server } =
   require("socket.io");
+  
 
 
 
@@ -69,6 +70,11 @@ const io =
     },
 
   });
+  /* =========================
+   STORE SOCKET.IO
+========================= */
+
+app.set("io", io);
 
 
 
@@ -346,6 +352,15 @@ app.use(
   require(
     "./routes/videoCallRoutes"
   )
+);
+app.use(
+
+  "/api/report-images",
+
+  require(
+    "./routes/reportImageRoutes"
+  )
+
 );
 
 

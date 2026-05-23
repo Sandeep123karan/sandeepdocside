@@ -1,79 +1,176 @@
+// const mongoose =
+//   require("mongoose");
+
+
+
+// const chatConversationSchema =
+//   new mongoose.Schema({
+
+//     appointmentId: {
+
+//       type:
+//         mongoose.Schema.Types.ObjectId,
+
+//       ref: "Appointment",
+
+//       required: true,
+
+//     },
+
+
+
+//     userId: {
+
+//       type:
+//         mongoose.Schema.Types.ObjectId,
+
+//       ref: "User",
+
+//       required: true,
+
+//     },
+
+
+
+//     doctorId: {
+
+//       type:
+//         mongoose.Schema.Types.ObjectId,
+
+//       ref: "Doctor",
+
+//       required: true,
+
+//     },
+
+
+
+//     lastMessage: {
+
+//       type: String,
+
+//       default: "",
+
+//     },
+
+
+
+//     lastMessageTime: {
+
+//       type: Date,
+
+//       default: Date.now,
+
+//     },
+
+//   },
+
+//   {
+//     timestamps: true,
+//   }
+// );
+
+
+
+// module.exports =
+//   mongoose.model(
+//     "ChatConversation",
+//     chatConversationSchema
+//   );
+
+
 const mongoose =
   require("mongoose");
 
-
-
 const chatConversationSchema =
-  new mongoose.Schema({
+  new mongoose.Schema(
 
-    appointmentId: {
+    {
 
-      type:
-        mongoose.Schema.Types.ObjectId,
+      appointmentId: {
 
-      ref: "Appointment",
+        type:
+          mongoose.Schema.Types.ObjectId,
 
-      required: true,
+        ref:
+          "Appointment",
+
+        required: true,
+
+      },
+
+      userId: {
+
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+
+        required: true,
+
+      },
+
+      doctorId: {
+
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "Doctor",
+
+        required: true,
+
+      },
+
+      lastMessage: {
+
+        type: String,
+
+        default: "",
+
+      },
+
+      lastMessageTime: {
+
+        type: Date,
+
+        default: Date.now,
+
+      },
+
+      unreadUserCount: {
+
+        type: Number,
+
+        default: 0,
+
+      },
+
+      unreadDoctorCount: {
+
+        type: Number,
+
+        default: 0,
+
+      },
+
+      isActive: {
+
+        type: Boolean,
+
+        default: true,
+
+      },
 
     },
 
+    {
+      timestamps: true,
+    }
 
-
-    userId: {
-
-      type:
-        mongoose.Schema.Types.ObjectId,
-
-      ref: "User",
-
-      required: true,
-
-    },
-
-
-
-    doctorId: {
-
-      type:
-        mongoose.Schema.Types.ObjectId,
-
-      ref: "Doctor",
-
-      required: true,
-
-    },
-
-
-
-    lastMessage: {
-
-      type: String,
-
-      default: "",
-
-    },
-
-
-
-    lastMessageTime: {
-
-      type: Date,
-
-      default: Date.now,
-
-    },
-
-  },
-
-  {
-    timestamps: true,
-  }
-);
-
-
+  );
 
 module.exports =
-  mongoose.model(
-    "ChatConversation",
-    chatConversationSchema
-  );
+ mongoose.model(
+  "UserChatConversation",
+  chatConversationSchema
+);

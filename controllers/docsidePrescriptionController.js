@@ -207,6 +207,101 @@ exports.createPrescription =
    ✅ GET PRESCRIPTION
 ========================= */
 
+// exports.getPrescriptionByAppointment =
+//   async (req, res) => {
+
+//     try {
+
+//       const prescription =
+//         await DocsidePrescription.findOne({
+
+//           appointmentId:
+//             req.params.appointmentId,
+
+//         })
+
+//           // .populate(
+//           //   "doctorId",
+//           //   "name email"
+//           // )
+
+//           // .populate(
+//           //   "userId",
+//           //   "fullname email phone"
+//           // );
+// .populate({
+
+//   path: "doctorId",
+
+//   select:
+//     "name email phone speciality experience gender profileImage clinicAddress",
+
+// })
+
+// .populate({
+
+//   path: "userId",
+
+//   select:
+//     "fullname email phone gender age profileImage address",
+
+// })
+
+// .populate({
+
+//   path: "appointmentId",
+
+// });
+
+
+//       if (!prescription) {
+
+//         return res.status(404).json({
+
+//           success: false,
+
+//           message:
+//             "Prescription not found",
+
+//         });
+
+//       }
+
+
+
+//       res.status(200).json({
+
+//         success: true,
+
+//         data:
+//           prescription,
+
+//       });
+
+//     } catch (error) {
+
+//       console.log(
+//         "GET PRESCRIPTION ERROR =>",
+//         error
+//       );
+
+//       res.status(500).json({
+
+//         success: false,
+
+//         message:
+//           error.message,
+
+//       });
+
+//     }
+
+//   };
+
+/* =========================
+   ✅ GET PRESCRIPTION
+========================= */
+
 exports.getPrescriptionByAppointment =
   async (req, res) => {
 
@@ -220,17 +315,37 @@ exports.getPrescriptionByAppointment =
 
         })
 
-          .populate(
-            "doctorId",
-            "name email"
-          )
+        // ================= DOCTOR =================
 
-          .populate(
-            "userId",
-            "fullname email phone"
-          );
+        .populate({
 
+          path: "doctorId",
 
+          select:
+            "_id name email phone speciality experience gender profileImage clinicAddress fees",
+
+        })
+
+        // ================= USER =================
+
+        .populate({
+
+          path: "userId",
+
+          select:
+            "_id fullname email phone gender age profileImage address",
+
+        })
+
+        // ================= APPOINTMENT =================
+
+        .populate({
+
+          path: "appointmentId",
+
+        });
+
+      // ================= CHECK =================
 
       if (!prescription) {
 
@@ -245,7 +360,7 @@ exports.getPrescriptionByAppointment =
 
       }
 
-
+      // ================= RESPONSE =================
 
       res.status(200).json({
 
@@ -274,9 +389,7 @@ exports.getPrescriptionByAppointment =
 
     }
 
-  };
-
-
+};
 
 
 
