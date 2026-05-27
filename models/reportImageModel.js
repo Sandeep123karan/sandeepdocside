@@ -7,7 +7,6 @@ const reportImageSchema =
     {
 
       // USER
-
       userId: {
 
         type:
@@ -22,7 +21,6 @@ const reportImageSchema =
 
 
       // DOCTOR
-
       doctorId: {
 
         type:
@@ -37,7 +35,6 @@ const reportImageSchema =
 
 
       // TITLE
-
       title: {
 
         type: String,
@@ -49,7 +46,6 @@ const reportImageSchema =
 
 
       // IMAGE
-
       image: {
 
         type: String,
@@ -61,7 +57,6 @@ const reportImageSchema =
 
 
       // DESCRIPTION
-
       description: {
 
         type: String,

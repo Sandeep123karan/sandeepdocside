@@ -2,11 +2,14 @@ const ReportImage =
   require(
     "../models/reportImageModel"
   );
+  require(
+  "../models/User"
+);
 
 
 
 // ======================================================
-// DOCTOR - GET ALL USER IMAGES
+// DOCTOR - GET USER IMAGES
 // ======================================================
 
 exports.getDoctorImages =
@@ -14,9 +17,11 @@ exports.getDoctorImages =
 
     try {
 
-      // ================= CHECK DOCTOR =================
+      // ==========================================
+      // CHECK DOCTOR
+      // ==========================================
 
-      if (!req.user?._id) {
+      if (!req.doctor) {
 
         return res.status(401).json({
 
@@ -31,28 +36,32 @@ exports.getDoctorImages =
 
 
 
-      // ================= FIND IMAGES =================
+      console.log(
+        "DOCTOR ID =>",
+        req.doctor._id
+      );
+
+
+
+      // ==========================================
+      // FIND REPORTS
+      // ==========================================
 
       const reports =
         await ReportImage.find({
 
           doctorId:
-            req.user._id,
+            req.doctor._id,
 
         })
 
-          // USER DETAILS
+          .populate(
 
-          .populate({
+            "userId",
 
-            path: "userId",
+            "fullname email phone image"
 
-            select:
-              "fullname email phone image",
-
-          })
-
-          // LATEST FIRST
+          )
 
           .sort({
 
@@ -62,7 +71,9 @@ exports.getDoctorImages =
 
 
 
-      // ================= RESPONSE =================
+      // ==========================================
+      // RESPONSE
+      // ==========================================
 
       res.status(200).json({
 
@@ -82,9 +93,14 @@ exports.getDoctorImages =
     } catch (error) {
 
       console.log(
-        "GET DOCTOR IMAGES ERROR:",
+
+        "GET DOCTOR IMAGES ERROR =>",
+
         error
+
       );
+
+
 
       res.status(500).json({
 

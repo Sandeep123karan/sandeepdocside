@@ -362,6 +362,15 @@ app.use(
   )
 
 );
+app.use(
+
+  "/api/stories",
+
+  require(
+    "./routes/storyRoutes"
+  )
+
+);
 
 
 
