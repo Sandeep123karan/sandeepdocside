@@ -1,86 +1,65 @@
-const jwt = require("jsonwebtoken");
+const jwt =
+  require("jsonwebtoken");
 
-const Doctor = require(
-  "../models/doctorModel"
-);
+const Doctor =
+  require("../models/doctorModel");
 
+exports.protect =
+  async (
+    req,
+    res,
+    next
+  ) => {
 
+    try {
 
-// ================= PROTECT MIDDLEWARE =================
+      let token =
+        req.headers.authorization;
 
-exports.protect = async (
-  req,
-  res,
-  next
-) => {
-  try {
-    let token;
+      if (!token) {
 
-    // ================= GET TOKEN =================
+        return res.status(401).json({
+          success: false,
+          message: "No token",
+        });
 
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith(
-        "Bearer"
-      )
-    ) {
+      }
+
       token =
-        req.headers.authorization.split(
-          " "
-        )[1];
-    }
+        token.split(" ")[1];
 
-    // ================= CHECK TOKEN =================
+      const decoded =
+        jwt.verify(
+          token,
+          process.env.JWT_SECRET
+        );
 
-    if (!token) {
+      const doctor =
+        await Doctor.findById(
+          decoded.id
+        ).select("-password");
+
+      if (!doctor) {
+
+        return res.status(404).json({
+          success: false,
+          message: "Doctor not found",
+        });
+
+      }
+
+      req.doctor =
+        doctor;
+
+      next();
+
+    } catch (error) {
+
       return res.status(401).json({
         success: false,
-        message: "Not authorized",
+        message: "Token failed",
       });
+
     }
 
-    // ================= VERIFY TOKEN =================
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
-
-    // ================= FIND DOCTOR =================
-
-    const doctor =
-      await Doctor.findById(
-        decoded.id
-      ).select("-password");
-
-    if (!doctor) {
-      return res.status(404).json({
-        success: false,
-        message: "Doctor not found",
-      });
-    }
-
-    // ================= CHECK BLOCKED =================
-
-    if (doctor.isBlocked) {
-      return res.status(403).json({
-        success: false,
-        message:
-          "Your account is blocked",
-      });
-    }
-
-    // ================= STORE LOGIN USER =================
-
-    req.doctor = doctor;
-
-    next();
-  } catch (error) {
-    console.log(error);
-
-    res.status(401).json({
-      success: false,
-      message: "Token failed",
-    });
-  }
-};
+  };

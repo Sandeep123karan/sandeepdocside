@@ -57,7 +57,19 @@ router.post(
   storyController.createStory
 
 );
+// ======================================================
+// DELETE STORY
+// ======================================================
 
+router.delete(
+
+  "/delete/:id",
+
+  protect,
+
+  storyController.deleteStory
+
+);
 
 
 // ======================================================

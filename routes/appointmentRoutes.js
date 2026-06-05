@@ -26,12 +26,31 @@ router.get(
   controller.getDoctorAppointments
 );
 
+// ✅ RECEIVE SETTLEMENT
+router.put(
+  "/settle-payment/:id",
+
+  protect,
+
+  controller.receiveSettlement
+);
+
+
 // ✅ UPDATE VITALS
 router.put(
   "/:id/vitals",
   protect,
   controller.updateVitals
 );
+
+// ✅ GET DOCTOR EARNINGS
+router.get(
+  "/my-earnings",
+  protect,
+  controller.getDoctorEarnings
+);
+
+
 
 // ✅ COMPLETE
 router.put(

@@ -281,6 +281,16 @@ app.use(
     "./routes/doctorRoutes"
   )
 );
+// ✅ RECEPTIONS
+// app.use(
+
+//   "/api/receptions",
+
+//   require(
+//     "./routes/receptionRoutes"
+//   )
+
+// );
 
 
 

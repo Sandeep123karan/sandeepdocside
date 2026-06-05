@@ -75,6 +75,66 @@ const appointmentSchema =
         default: "approved",
       },
 
+// ✅ PAYMENT
+paymentMethod: {
+
+  type: String,
+
+  default: "ONLINE",
+},
+
+paymentStatus: {
+
+  type: String,
+
+  enum: [
+    "PENDING",
+    "PAID",
+    "FAILED",
+  ],
+
+  default: "PENDING",
+},
+
+settlementStatus: {
+
+  type: String,
+
+  enum: [
+    "PENDING",
+    "SETTLED",
+  ],
+
+  default: "PENDING",
+},
+
+appointmentFees: {
+
+  type: Number,
+
+  default: 0,
+},
+
+adminCommission: {
+
+  type: Number,
+
+  default: 0,
+},
+
+doctorAmount: {
+
+  type: Number,
+
+  default: 0,
+},
+
+paidAt: {
+
+  type: Date,
+},
+
+
     },
     {
       timestamps: true,
