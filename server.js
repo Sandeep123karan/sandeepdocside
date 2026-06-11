@@ -387,6 +387,15 @@ const patientCaseRoutes = require( "./routes/patientCaseRoutes" );
 app.use( "/api/patient-case", patientCaseRoutes );
 
 
+const historyRoutes =
+  require("./routes/historyRoutes");
+
+app.use(
+  "/api/history",
+  historyRoutes
+);
+
+
 /* =========================
    INVALID ROUTE
 ========================= */
