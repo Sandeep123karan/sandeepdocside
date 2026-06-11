@@ -381,9 +381,10 @@ app.use(
   )
 
 );
+const patientCaseRoutes = require( "./routes/patientCaseRoutes" );
 
 
-
+app.use( "/api/patient-case", patientCaseRoutes );
 
 
 /* =========================

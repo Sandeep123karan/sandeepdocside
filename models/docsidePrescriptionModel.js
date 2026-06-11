@@ -1,40 +1,55 @@
-// models/docsidePrescriptionModel.js
 
 const mongoose =
   require("mongoose");
-
-
-
-/* =========================
-   💊 MEDICINE SCHEMA
-========================= */
-
-const medicineSchema =
+  const prescribedMedicineSchema =
   new mongoose.Schema({
 
-    medicineName: {
-      type: String,
-      default: "",
-    },
+    // ✅ PHARMACY PRODUCT ID
+ productId: {
 
+  type:
+    mongoose.Schema.Types.ObjectId,
+
+  ref: "MedicineItem",
+
+  required: true,
+
+},
+
+    // ✅ DOSAGE
     dosage: {
+
       type: String,
+
       default: "",
+
     },
 
+    // ✅ FREQUENCY
     frequency: {
+
       type: String,
+
       default: "",
+
     },
 
+    // ✅ DURATION
     duration: {
+
       type: String,
+
       default: "",
+
     },
 
+    // ✅ INSTRUCTIONS
     instructions: {
+
       type: String,
+
       default: "",
+
     },
 
   });
@@ -135,11 +150,17 @@ const docsidePrescriptionSchema =
 
 
     // ✅ PRESCRIBED MEDICINES
-    medicines: [
-      medicineSchema
-    ],
+  medicines: [
+  prescribedMedicineSchema
+],
 
-
+// ✅ SYMPTOMS
+symptoms: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "OnlineSymptom",
+  },
+],
 
     // ✅ LAB INVESTIGATIONS
     labInvestigations: [

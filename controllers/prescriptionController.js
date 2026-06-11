@@ -184,3 +184,96 @@ exports.getSinglePrescription =
     }
 
 };
+const axios = require("axios");
+
+
+// ======================================================
+// MEDICINE DROPDOWN
+// ======================================================
+
+exports.getMedicineDropdown =
+  async (req, res) => {
+
+    try {
+
+      const response = await axios.get(
+        `${process.env.PHARMACY_API}/api/pharmacy-products/dropdown`
+      );
+
+      res.status(200).json({
+
+        success: true,
+
+        total:
+          response.data.data.length,
+
+        data:
+          response.data.data,
+
+      });
+
+    } catch (error) {
+
+      console.log(
+        "MEDICINE DROPDOWN ERROR =>",
+        error.message
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+
+      });
+
+    }
+
+};
+
+
+// ======================================================
+// SYMPTOMS DROPDOWN
+// ======================================================
+
+exports.getSymptomsDropdown =
+  async (req, res) => {
+
+    try {
+
+      const response = await axios.get(
+        `${process.env.SYMPTOM_API}/api/online-symptoms/dropdown`
+      );
+
+      res.status(200).json({
+
+        success: true,
+
+        total:
+          response.data.data.length,
+
+        data:
+          response.data.data,
+
+      });
+
+    } catch (error) {
+
+      console.log(
+        "SYMPTOMS DROPDOWN ERROR =>",
+        error.message
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+
+      });
+
+    }
+
+};
