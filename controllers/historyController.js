@@ -7,7 +7,7 @@ const Appointment =
 const DocsidePrescription =
   require("../models/docsidePrescriptionModel");
 require("../models/onlineSymptomModel");
-
+   
 
 /* =====================================================
    ✅ SINGLE USER FULL HISTORY
