@@ -1,158 +1,99 @@
+const mongoose = require("mongoose");
 
+const DocsidePrescription = require("../models/docsidePrescriptionModel");
 
-const mongoose =
-  require("mongoose");
+const Appointment = require("../models/appointmentModel");
 
-const DocsidePrescription =
-  require(
-    "../models/docsidePrescriptionModel"
-  );
+const MedicineItem = require("../models/pharmacyProductModel");
 
-const Appointment =
-  require(
-    "../models/appointmentModel"
-  );
+const createPrescription = async (req, res) => {
+  try {
+    const {
+      appointmentId,
+      chiefComplaints,
+      examinationFindings,
+      provisionalDiagnosis,
+      clinicalNotes,
+      medicines = [],
+      symptoms = [],
+      labInvestigations = [],
+      dietaryInstructions,
+      doctorsAdvice,
+      patientId,
+      patientName,
+      complaints,
+      findings,
+      diagnosis,
+      notes,
+      dietInstructions,
+      vitals = {},
+      vitalsSummary,
+      labReports = [],
+      referralDoctor,
+      language,
+      consultationDuration,
+      consultationDate,
+    } = req.body;
 
-const MedicineItem =
-  require(
-    "../models/pharmacyProductModel"
-  );
+    const appointment = await Appointment.findById(appointmentId);
 
-
-/* =========================
-   ✅ CREATE PRESCRIPTION
-========================= */
-
-const createPrescription =
-  async (req, res) => {
-
-    try {
-
-      const {
-
-        appointmentId,
-
-        chiefComplaints,
-
-        examinationFindings,
-
-        provisionalDiagnosis,
-
-        clinicalNotes,
-
-        medicines = [],
-
-        symptoms = [],
-
-        labInvestigations = [],
-
-        dietaryInstructions,
-
-        doctorsAdvice,
-
-      } = req.body;
-
-
-      // ✅ CHECK APPOINTMENT
-
-      const appointment =
-        await Appointment.findById(
-          appointmentId
-        );
-
-      if (!appointment) {
-
-        return res.status(404).json({
-
-          success: false,
-
-          message:
-            "Appointment not found",
-
-        });
-
-      }
-
-
-      // ✅ CREATE
-
-      const prescription =
-        await DocsidePrescription.create({
-
-          appointmentId,
-
-          doctorId:
-            req.doctor._id,
-
-          userId:
-            appointment.userId,
-
-          chiefComplaints,
-
-          examinationFindings,
-
-          provisionalDiagnosis,
-
-          clinicalNotes,
-
-          medicines,
-
-          symptoms,
-
-          labInvestigations,
-
-          dietaryInstructions,
-
-          doctorsAdvice,
-
-        });
-
-
-      res.status(201).json({
-
-        success: true,
-
-        message:
-          "Prescription created successfully",
-
-        data:
-          prescription,
-
-      });
-
-    } catch (error) {
-
-      console.log(error);
-
-      res.status(500).json({
-
+    if (!appointment) {
+      return res.status(404).json({
         success: false,
-
-        message:
-          error.message,
-
+        message: "Appointment not found",
       });
-
     }
 
-  };
+    const prescription = await DocsidePrescription.create({
+      appointmentId,
+      doctorId: req.doctor._id,
+      userId: appointment.userId,
+      chiefComplaints,
+      examinationFindings,
+      provisionalDiagnosis,
+      clinicalNotes,
+      medicines,
+      symptoms,
+      labInvestigations,
+      dietaryInstructions,
+      doctorsAdvice,
+      patientId,
+      patientName,
+      complaints,
+      findings,
+      diagnosis,
+      notes,
+      dietInstructions,
+      vitals,
+      vitalsSummary,
+      labReports,
+      referralDoctor,
+      language,
+      consultationDuration,
+      consultationDate,
+    });
 
+    res.status(201).json({
+      success: true,
+      message: "Prescription created successfully",
+      data: prescription,
+    });
+  } catch (error) {
+    console.log(error);
 
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-/* =========================
-   ✅ GET ALL MEDICINES
-========================= */
+const getAllMedicines = async (req, res) => {
+  try {
+    const medicines = await MedicineItem.find()
 
-const getAllMedicines =
-  async (req, res) => {
-
-    try {
-
-      const medicines =
-        await MedicineItem.find()
-
-        .select(
-          `
+      .select(
+        `
           _id
           productTitle
           brand
@@ -160,290 +101,160 @@ const getAllMedicines =
           mrp
           stock
           image
-          `
-        );
+          `,
+      );
 
-      res.status(200).json({
+    res.status(200).json({
+      success: true,
 
-        success: true,
+      data: medicines,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
 
-        data:
-          medicines,
+      message: error.message,
+    });
+  }
+};
 
-      });
+const getPrescriptionByAppointment = async (req, res) => {
+  try {
+    const prescription = await DocsidePrescription.findOne({
+      appointmentId: req.params.appointmentId,
+    })
 
-    } catch (error) {
+      .populate({
+        path: "doctorId",
 
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-
-      });
-
-    }
-
-  };
-
-
-
-/* =========================
-   ✅ GET PRESCRIPTION
-========================= */
-
-const getPrescriptionByAppointment =
-  async (req, res) => {
-
-    try {
-
-      const prescription =
-        await DocsidePrescription.findOne({
-
-          appointmentId:
-            req.params.appointmentId,
-
-        })
-
-        .populate({
-
-          path: "doctorId",
-
-          select:
-            `
+        select: `
             name
             email
             speciality
             profileImage
             `,
-        })
+      })
 
-        .populate({
+      .populate({
+        path: "userId",
 
-          path: "userId",
-
-          select:
-            `
+        select: `
             fullname
             email
             phone
             `,
-        })
+      })
 
-        .populate({
+      .populate({
+        path: "symptoms",
 
-          path: "symptoms",
-
-          select:
-            `
+        select: `
             name
             image
             color
             `,
-        })
-
-
-
-
-      if (!prescription) {
-
-        return res.status(404).json({
-
-          success: false,
-
-          message:
-            "Prescription not found",
-
-        });
-
-      }
-
-
-
-      // ✅ ONLY PRODUCT IDs
-
-      const formattedPrescription = {
-
-        ...prescription.toObject(),
-
-        medicines:
-          prescription.medicines.map(
-            (item) => ({
-
-              productId:
-                item.productId,
-
-              dosage:
-                item.dosage,
-
-              frequency:
-                item.frequency,
-
-              duration:
-                item.duration,
-
-              instructions:
-                item.instructions,
-
-            })
-          ),
-
-      };
-
-
-
-      res.status(200).json({
-
-        success: true,
-
-        data:
-          formattedPrescription,
-
       });
 
-    } catch (error) {
-
-      console.log(error);
-
-      res.status(500).json({
-
-        success: false,
-        message: error.message,
-
-      });
-
-    }
-
-  };
-
-
-/* =========================
-   ✅ UPDATE PRESCRIPTION
-========================= */
-
-const updatePrescription =
-  async (req, res) => {
-
-    try {
-
-      const prescription =
-        await DocsidePrescription.findById(
-          req.params.id
-        );
-
-      if (!prescription) {
-
-        return res.status(404).json({
-
-          success: false,
-
-          message:
-            "Prescription not found",
-
-        });
-
-      }
-
-
-      Object.assign(
-        prescription,
-        req.body
-      );
-
-      await prescription.save();
-
-
-      res.status(200).json({
-
-        success: true,
-
-        message:
-          "Prescription updated successfully",
-
-        data:
-          prescription,
-
-      });
-
-    } catch (error) {
-
-      res.status(500).json({
-
+    if (!prescription) {
+      return res.status(404).json({
         success: false,
 
-        message:
-          error.message,
-
+        message: "Prescription not found",
       });
-
     }
 
-  };
+    const formattedPrescription = {
+      ...prescription.toObject(),
 
+      medicines: prescription.medicines.map((item) => ({
+        productId: item.productId,
 
+        dosage: item.dosage,
 
-/* =========================
-   ✅ DELETE PRESCRIPTION
-========================= */
+        frequency: item.frequency,
 
-const deletePrescription =
-  async (req, res) => {
+        duration: item.duration,
 
-    try {
+        instructions: item.instructions,
+      })),
+    };
 
-      const prescription =
-        await DocsidePrescription.findById(
-          req.params.id
-        );
+    res.status(200).json({
+      success: true,
 
-      if (!prescription) {
+      data: formattedPrescription,
+    });
+  } catch (error) {
+    console.log(error);
 
-        return res.status(404).json({
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-          success: false,
+const updatePrescription = async (req, res) => {
+  try {
+    const prescription = await DocsidePrescription.findById(req.params.id);
 
-          message:
-            "Prescription not found",
-
-        });
-
-      }
-
-      await prescription.deleteOne();
-
-      res.status(200).json({
-
-        success: true,
-
-        message:
-          "Prescription deleted successfully",
-
-      });
-
-    } catch (error) {
-
-      res.status(500).json({
-
+    if (!prescription) {
+      return res.status(404).json({
         success: false,
 
-        message:
-          error.message,
-
+        message: "Prescription not found",
       });
-
     }
 
-  };
+    Object.assign(prescription, req.body);
 
+    await prescription.save();
 
+    res.status(200).json({
+      success: true,
 
-/* =========================
-   ✅ EXPORTS
-========================= */
+      message: "Prescription updated successfully",
+
+      data: prescription,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+const deletePrescription = async (req, res) => {
+  try {
+    const prescription = await DocsidePrescription.findById(req.params.id);
+
+    if (!prescription) {
+      return res.status(404).json({
+        success: false,
+
+        message: "Prescription not found",
+      });
+    }
+
+    await prescription.deleteOne();
+
+    res.status(200).json({
+      success: true,
+
+      message: "Prescription deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
-
   createPrescription,
 
   getAllMedicines,
@@ -453,6 +264,4 @@ module.exports = {
   updatePrescription,
 
   deletePrescription,
-
 };
-

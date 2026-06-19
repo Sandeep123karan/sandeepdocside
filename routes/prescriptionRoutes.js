@@ -1,62 +1,42 @@
-
-
-
 const express = require("express");
 
 const router = express.Router();
 
-
 // ================= CONTROLLERS =================
 
 const {
-
   getMyPrescriptions,
 
   getSinglePrescription,
-
-} = require(
-  "../controllers/prescriptionController"
-);
-
+} = require("../controllers/prescriptionController");
 
 // ================= MIDDLEWARE =================
 
-const {
-
-  protect,
-
-} = require(
-  "../middleware/authMiddleware"
-);
-
+const { protect } = require("../middleware/authMiddleware");
 
 // =====================================================
 // ============ GET MY PRESCRIPTIONS ===================
 // =====================================================
 
 router.get(
-
   "/my",
 
   protect,
 
-  getMyPrescriptions
+  getMyPrescriptions,
 );
-
 
 // =====================================================
 // ============ GET SINGLE PRESCRIPTION ================
 // =====================================================
 
 router.get(
-
   "/:id",
 
   protect,
 
-  getSinglePrescription
+  getSinglePrescription,
 );
-
 
 // ================= EXPORT =================
 

@@ -1,21 +1,8 @@
+const express = require("express");
 
-
-
-// routes/docsidePrescriptionRoutes.js
-
-const express =
-  require("express");
-
-const router =
-  express.Router();
-
-
-/* =========================
-   ✅ CONTROLLERS
-========================= */
+const router = express.Router();
 
 const {
-
   createPrescription,
 
   getAllMedicines,
@@ -25,77 +12,22 @@ const {
   updatePrescription,
 
   deletePrescription,
+} = require("../controllers/docsidePrescriptionController");
 
-} = require(
-  "../controllers/docsidePrescriptionController"
-);
+const { protect } = require("../middleware/authMiddleware");
 
+router.post("/", protect, createPrescription);
 
-/* =========================
-   ✅ MIDDLEWARE
-========================= */
-
-const {
-  protect,
-} = require(
-  "../middleware/authMiddleware"
-);
-
-
-/* =========================
-   🩺 PRESCRIPTION ROUTES
-========================= */
-
-
-// ✅ CREATE PRESCRIPTION
-
-router.post(
-  "/",
-  protect,
-  createPrescription
-);
-
-
-// ✅ GET ALL MEDICINES
-
-router.get(
-  "/medicines",
-  protect,
-  getAllMedicines
-);
-
-
-// ✅ GET PRESCRIPTION BY APPOINTMENT
+router.get("/medicines", protect, getAllMedicines);
 
 router.get(
   "/appointment/:appointmentId",
   protect,
-  getPrescriptionByAppointment
+  getPrescriptionByAppointment,
 );
 
+router.put("/:id", protect, updatePrescription);
 
-// ✅ UPDATE PRESCRIPTION
+router.delete("/:id", protect, deletePrescription);
 
-router.put(
-  "/:id",
-  protect,
-  updatePrescription
-);
-
-
-// ✅ DELETE PRESCRIPTION
-
-router.delete(
-  "/:id",
-  protect,
-  deletePrescription
-);
-
-
-/* =========================
-   ✅ EXPORT ROUTER
-========================= */
-
-module.exports =
-  router;
-
+module.exports = router;
